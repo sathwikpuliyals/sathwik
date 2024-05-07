@@ -1,0 +1,21 @@
+April 11th 2024
+
+Installation:
+Step1:
+Sql server and SSMS Installation: https://youtu.be/UTkA-6o419Q?si=q7q4LkjwnAOW6jX9
+Step2:
+Restoring Adventureworks database: https://youtu.be/FfPrbh6DEcc?si=0FPokzdSLe2bQl4d
+
+
+Sql Topics
+
+1.	Basic select statements
+2.	Filtering the data
+3.	Groupby
+4.	Aggregate Functions
+
+Data Warehousing
+
+1.	What is the difference between a database and a data warehouse?
+2.	Explain the process of ETL and its importance in a Data Warehouse.
+3.	Discuss the concept of Data Warehouse schemas. Compare and contrast the Star Schema with the Snowflake Schema.
