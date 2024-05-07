@@ -1,0 +1,153 @@
+
+Common Table Expression (CTE) Questions and Answers
+
+Question 1:
+Create a CTE named `RecentEmployees` that selects the `BusinessEntityID` and `HireDate` from the `HumanResources.Employee` table for employees hired in the year 2019. Then, display all columns from this CTE.
+
+Answer 1:
+```sql
+WITH RecentEmployees AS (
+    SELECT BusinessEntityID, HireDate FROM HumanResources.Employee
+    WHERE YEAR(HireDate) = 2019
+)
+SELECT * FROM RecentEmployees;
+```
+
+Question 2:
+Write a CTE called `ProductCategories` that joins the `Production.Product` table with the `Production.ProductCategory` table on `ProductCategoryID`. Select the `ProductID`, product `Name`, and category `Name` from this CTE.
+
+Answer 2:
+```sql
+WITH ProductCategories AS (
+    SELECT p.ProductID, p.Name AS ProductName, pc.Name AS CategoryName
+    FROM Production.Product p
+    JOIN Production.ProductCategory pc ON p.ProductCategoryID = pc.ProductCategoryID
+)
+SELECT * FROM ProductCategories;
+```
+
+Question 3:
+Define a CTE named `TopSalesPersons` that calculates the total sales for each salesperson in the `Sales.SalesOrderHeader` table. Include `SalesPersonID` and total sales, then display results for salespersons with total sales over $1,000,000.
+
+Answer 3:
+```sql
+WITH TopSalesPersons AS (
+    SELECT SalesPersonID, SUM(TotalDue) AS TotalSales
+    FROM Sales.SalesOrderHeader
+    WHERE SalesPersonID IS NOT NULL
+    GROUP BY SalesPersonID
+)
+SELECT * FROM TopSalesPersons
+WHERE TotalSales > 1000000;
+```
+--------------------------------------------------------------------------
+Question 4:
+Create a CTE named `CustomerEmails` that selects `CustomerID` and `EmailAddress` from the `Person.EmailAddress` table. Use this CTE to display emails that contain the domain "example.com".
+
+Answer 4:
+```sql
+WITH CustomerEmails AS (
+    SELECT CustomerID, EmailAddress
+    FROM Person.EmailAddress
+)
+SELECT * FROM CustomerEmails
+WHERE EmailAddress LIKE '%@example.com';
+```
+
+Question 5:
+Write a CTE called `HighInventoryProducts` that selects `ProductID`, `Name`, and `SafetyStockLevel` from the `Production.Product` where the `SafetyStockLevel` is above 500. Display all products from this CTE.
+
+Answer 5:
+```sql
+WITH HighInventoryProducts AS (
+    SELECT ProductID, Name, SafetyStockLevel
+    FROM Production.Product
+    WHERE SafetyStockLevel > 500
+)
+SELECT * FROM HighInventoryProducts;
+```
+
+
+
+6. Create a CTE named LowStockProducts that selects ProductID, Name, and SafetyStockLevel from the Production.Product table where the SafetyStockLevel is below 100. Then, use this CTE to display all products from it that are also discontinued (Hint: SellEndDate is not NULL).
+
+WITH LowStockProducts AS (
+    SELECT ProductID, Name, SafetyStockLevel
+    FROM Production.Product
+    WHERE SafetyStockLevel < 100
+)
+SELECT ProductID, Name
+FROM LowStockProducts
+WHERE SellEndDate IS NOT NULL;
+
+
+
+SQL Questions on RANK, HAVING, and Aggregate Functions
+
+Question 1:
+Write a query using the RANK() function to list all employees in the `HumanResources.Employee` table by their salary in descending order. Display the `BusinessEntityID`, `JobTitle`, and their rank. Only include employees in the top 10 ranks.
+
+Answer 1:
+```sql
+SELECT BusinessEntityID, JobTitle, Salary, Rank
+FROM (
+    SELECT BusinessEntityID, JobTitle, Salary, RANK() OVER (ORDER BY Salary DESC) AS Rank
+    FROM HumanResources.Employee
+) AS RankedEmployees
+WHERE Rank <= 10;
+
+```
+
+Question 2:
+Create an aggregate query to find the total number of products in each color available in the `Production.Product` table. Display the color and the count, but only for colors that have more than 5 products.
+
+Answer 2:
+```sql
+SELECT Color, COUNT(*) AS NumberOfProducts
+FROM Production.Product
+GROUP BY Color
+HAVING COUNT(*) > 5;
+```
+
+Question 3:
+Use an aggregate function to calculate the average `ListPrice` for products in the `Production.Product` table by their `ProductCategoryID`. Display the category ID and the average price.
+
+Answer 3:
+```sql
+SELECT ProductCategoryID, AVG(ListPrice) AS AveragePrice
+FROM Production.Product
+GROUP BY ProductCategoryID;
+```
+----------------------------------------------------------------
+Question 4:
+Write a query that uses the SUM function to calculate the total sales for each store in the `Sales.Store` table. Display the store name and total sales, and use a HAVING clause to only include stores with total sales greater than $1,000,000.
+
+Answer 4:
+```sql
+SELECT Name, SUM(TotalDue) AS TotalSales
+FROM Sales.Store
+JOIN Sales.SalesOrderHeader ON Sales.Store.BusinessEntityID = Sales.SalesOrderHeader.StoreID
+GROUP BY Name
+HAVING SUM(TotalDue) > 1000000;
+```
+
+Question 5:
+Generate a query using the COUNT() function to count the number of sales orders each salesperson has made from the `Sales.SalesOrderHeader` table. Display the `SalesPersonID` and the order count, only including salespersons with more than 50 orders.
+
+Answer 5:
+```sql
+SELECT SalesPersonID, COUNT(SalesOrderID) AS OrderCount
+FROM Sales.SalesOrderHeader
+WHERE SalesPersonID IS NOT NULL
+GROUP BY SalesPersonID
+HAVING COUNT(SalesOrderID) > 50;
+```
+
+Question 6:
+Use the MAX() function to find the most recent hire date of employees in each department from the `HumanResources.EmployeeDepartmentHistory` table. Display the department ID and the most recent hire date.
+
+Answer 6:
+```sql
+SELECT DepartmentID, MAX(StartDate) AS MostRecentHireDate
+FROM HumanResources.EmployeeDepartmentHistory
+GROUP BY DepartmentID;
